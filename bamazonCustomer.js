@@ -27,7 +27,7 @@ function customerBuy() {
     inquirer.prompt([{
             name: "whichItem",
             type: "list",
-            message: "Which product would you like to buy?",
+            message: "Which product would you like to buy? Please choose by item_id.",
             choices: ["1", "2","3","4","5","6","7","8","9","10"]
         },
         {
@@ -40,12 +40,13 @@ function customerBuy() {
             var stockOnHand = results[0].stock_quantity;
             var itemPrice = results[0].price;
             var totalPrice = itemPrice*response.itemQty;
+
             if (stockOnHand >= response.itemQty) {
                 connection.query('UPDATE `products` SET stock_quantity = stock_quantity - ? where `item_id` = ?', [response.itemQty, response.whichItem]);
-                console.log("We have more than enough stock. Your total is: $" + totalPrice);
+                console.log("We have enough stock. Your total is: $" + totalPrice + ".");
                 connection.end();
             } else {
-                console.log("Sorry we don't have enough stock.");
+                console.log("Sorry we don't have enough stock. Please try again next time.");
                 connection.end();
             }
         })
