@@ -3,14 +3,8 @@ var inquirer = require("inquirer");
 
 var connection = mysql.createConnection({
     host: "localhost",
-
-    // Your port; if not 3306
     port: 5000,
-
-    // Your username
     user: "root",
-
-    // Your password
     password: "root",
     database: "bamazon"
 });
@@ -24,7 +18,6 @@ connection.connect(function (err) {
 function readTable() {
     connection.query("SELECT item_id,product_name,price FROM products", function (err, res) {
         if (err) throw err;
-        // Log all results of the SELECT statement
         console.log(res);
         customerBuy();
     })
@@ -35,17 +28,26 @@ function customerBuy() {
             name: "whichItem",
             type: "list",
             message: "Which product would you like to buy?",
-            choices: ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"]
+            choices: ["1", "2","3","4","5","6","7","8","9","10"]
         },
         {
             name: "itemQty",
             type: "input",
-            message: "How much would you like to buy?",
-            choices: ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"]
+            message: "How many pieces would you like to buy?"
         }
     ]).then(function (response) {
-            console.log(response.whichItem);
-            console.log(response.itemQty);
-            connection.end();
+            connection.query('SELECT * FROM `products` WHERE `item_id` = ?', [response.whichItem], function (error, results, fields) {
+            var stockOnHand = results[0].stock_quantity;
+            var itemPrice = results[0].price;
+            var totalPrice = itemPrice*response.itemQty;
+            if (stockOnHand >= response.itemQty) {
+                connection.query('UPDATE `products` SET stock_quantity = stock_quantity - ? where `item_id` = ?', [response.itemQty, response.whichItem]);
+                console.log("We have more than enough stock. Your total is: $" + totalPrice);
+                connection.end();
+            } else {
+                console.log("Sorry we don't have enough stock.");
+                connection.end();
+            }
         })
-    };
+    })
+}
