@@ -1,3 +1,4 @@
+
 var mysql = require("mysql");
 var inquirer = require("inquirer");
 
@@ -26,9 +27,8 @@ function readTable() {
 function customerBuy() {
     inquirer.prompt([{
             name: "whichItem",
-            type: "list",
-            message: "Which product would you like to buy? Please choose by item_id.",
-            choices: ["1", "2","3","4","5","6","7","8","9","10"]
+            type: "input",
+            message: "Which product would you like to buy? Please input item_id."
         },
         {
             name: "itemQty",

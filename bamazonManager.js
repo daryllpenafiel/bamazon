@@ -62,17 +62,22 @@ function viewProducts() {
 
 // 2 - VIEW LOW INVENTORY
 function viewLowInventory() {
-    connection.query("SELECT * from products where stock_quantity < 31", function (err, res) {
+    connection.query("SELECT * from products where stock_quantity < 5", function (err, res) {
         if (err) throw err;
-        console.log("The following items are low inventory items: ");
-        for (i = 0; i < res.length; i++) {
-            console.log("Item id: " + res[i].item_id);
-            console.log("Product Name: " + res[i].product_name);
-            console.log("Retail Price: " + res[i].price);
-            console.log("Stock on hand : " + res[i].stock_quantity);
-            console.log("------------------------------");
-        }
-        connection.end();
+        if (res.length == 0) {
+            console.log("We don't have any items with a stock level below 5 at the moment.");
+            connection.end();
+        } else {
+            console.log("The following items are low inventory items (below 5 in stock): ");
+            for (i = 0; i < res.length; i++) {
+                console.log("Item id: " + res[i].item_id);
+                console.log("Product Name: " + res[i].product_name);
+                console.log("Retail Price: " + res[i].price);
+                console.log("Stock on hand : " + res[i].stock_quantity);
+                console.log("------------------------------");
+            }
+            connection.end();
+        } 
     })
 };
 
@@ -90,9 +95,8 @@ function addToInventory() {
     //asks which item to add and how much
     inquirer.prompt([{
             name: "whichItem",
-            type: "list",
-            message: "Which item would you like to add inventory to? Please choose by item_id.",
-            choices: ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"]
+            type: "input",
+            message: "Which item would you like to add inventory to? Please input item_id."
         },
         {
             name: "itemQty",
@@ -112,7 +116,7 @@ function addNewProduct() {
     inquirer.prompt([{
             name: "newItemName",
             type: "input",
-            message: "Please enter product name of new item.",
+            message: "Please enter product name of new item."
         },
         {
             name: "newItemDept",
